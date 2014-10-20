@@ -5,6 +5,12 @@ angular.module('weddingWebApp')
     $scope.menu = [{
       'title': 'Home',
       'link': '/'
+    }, {
+    	'title': 'Gallery',
+    	'link': '/gallery'
+    }, {
+    	'title': 'Guestbook',
+    	'link': '/guestbook'
     }];
 
     $scope.isCollapsed = true;
