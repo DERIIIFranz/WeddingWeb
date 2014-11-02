@@ -16,29 +16,45 @@ exports.index = function(req, res) {
 
 // Get a single image
 exports.show = function(req, res) {
-	Image.findById(req.params.id, function(err, image) {
+	var full_path = "server\\uploads\\images\\" + req.params.id;
+	Image.find({
+		path : full_path
+	}, function(err, img) {
 		if (err) {
 			return handleError(res, err);
 		}
-		if (!image) {
+		if (!img) {
 			return res.send(404);
 		}
-		return res.json(image);
+
+		fs.exists(full_path, function(exists) {
+			if (!exists) {
+				res.json(404, "image " + req.params.id + " not found");
+			} else {
+				fs.readFile(full_path, "binary", function(err, file) {
+					res.writeHeader(200);
+					res.write(file, "binary");
+					res.end();
+				});
+			}
+		});
+
 	});
 };
 
 // Creates a new image in the DB.
 exports.create = function(req, res) {
-	
 	console.log(req.files);
 
-	var img = {name: req.files.photo.originalname,
-		path: req.files.photo.path,
-		alt: req.files.photo.fieldname,
-		size: req.files.photo.size,
-		type: req.files.photo.mimetype,
-		active: true};
-		
+	var img = {
+		name : req.files.photo.name,
+		path : req.files.photo.path,
+		alt : req.files.photo.fieldname,
+		size : req.files.photo.size,
+		type : req.files.photo.mimetype,
+		active : true
+	};
+
 	Image.create(img, function(err, file) {
 		if (err) {
 			return handleError(res, err);

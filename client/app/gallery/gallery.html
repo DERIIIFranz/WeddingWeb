@@ -1,15 +1,12 @@
 <div class="col-md-12" id="gallery">
-This is the gallery view.
+
+	<ul>
+		<li ng-repeat="image in imageList"><img class="img-responsive" ng-src="/api/images/{{image.name}}" />
+		</li>
+	</ul>
 </div>
 
-<form name="fileUpload" method="post" action="http://localhost:9000/api/images" enctype="multipart/form-data">
-	<br />
-		<br />
-
-	<br />
-
-	<br />
-
+<form name="fileUpload" method="post" action="/api/images" enctype="multipart/form-data">
 	<div class="form-group">
 		<input type="file" name="photo" />
 		<input type="submit" value="upload" />

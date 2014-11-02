@@ -30,6 +30,5 @@ describe('Main View', function() {
   		page.navMain.element(by.linkText('Guestbook')).click();
   		expect(pTor.isElementPresent(element(by.id('guestbook'))));
   	});
-  	
   });
 });
