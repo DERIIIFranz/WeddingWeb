@@ -33,7 +33,7 @@ describe('GET /api/images', function() {
 			done();
 		});
 	});
-	 
+
 	after(function(done) {
 		Image.remove({}, done);
 	});
@@ -46,6 +46,48 @@ describe('POST /api/images', function() {
 			res.should.have.status(201);
 			cleanupImage(res.body.path);
 			done();
+		});
+	});
+});
+
+describe('DELETE /api/images', function() {
+	
+	it('should delete an image from DB and FS', function(done) {
+		request(app).post('/api/images').field('extra_info', '{"description":"Image of Yeoman"}').attach('file', 'client/assets/images/yeoman.png').end(function(err, res) {
+			res.should.have.status(201);
+			request(app).delete('/api/images/' + res.body.name).end(function(err, res) {
+				res.should.have.status(200, "image " + res.body.name + " removed from DB and FS");
+				done();
+			});
+		});
+	});
+
+	it('should handle error on non-existing image', function(done) {
+		request(app).delete('/api/images/' + "nonExistingFile.jpg").end(function(err, res) {
+			res.should.have.status(404);
+			done();
+		});
+	});
+	
+	it('should delete image from DB, when not existing on FS', function(done) {
+		request(app).post('/api/images').field('extra_info', '{"description":"Image of Yeoman"}').attach('file', 'client/assets/images/yeoman.png').end(function(err, res) {
+			res.should.have.status(201);
+			fs.unlink(res.body.path);
+			request(app).delete('/api/images/' + res.body.name).end(function(err, res) {
+				res.should.have.status(200, "image " + res.body.name + " only deleted from DB");
+				done();
+			});
+		});
+	});
+	
+	it('should delete image from FS, when not existing in DB', function(done) {
+		request(app).post('/api/images').field('extra_info', '{"description":"Image of Yeoman"}').attach('file', 'client/assets/images/yeoman.png').end(function(err, res) {
+			res.should.have.status(201);
+			Image.remove({path: res.body.path});
+			request(app).delete('/api/images/' + res.body.name).end(function(err, res) {
+				res.should.have.status(200, "image " + res.body.name + " only deleted from FS");
+				done();
+			});
 		});
 	});
 });

@@ -29,6 +29,5 @@ describe('Gallery', function() {
 
 			});
 		});
-
 	});
 });

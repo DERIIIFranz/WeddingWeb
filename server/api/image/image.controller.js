@@ -4,6 +4,8 @@ var _ = require('lodash');
 var fs = require('fs');
 var Image = require('./image.model');
 
+var baseUrl = "server\\uploads\\images\\";
+
 // Get list of images
 exports.index = function(req, res) {
 	Image.find(function(err, images) {
@@ -16,7 +18,7 @@ exports.index = function(req, res) {
 
 // Get a single image
 exports.show = function(req, res) {
-	var full_path = "server\\uploads\\images\\" + req.params.id;
+	var full_path = baseUrl + req.params.id;
 	Image.find({
 		path : full_path
 	}, function(err, img) {
@@ -87,20 +89,49 @@ exports.update = function(req, res) {
 
 // Deletes an image from the DB.
 exports.destroy = function(req, res) {
-	Image.findById(req.params.id, function(err, image) {
+	var foundInDB = true;
+	var foundInFS = true;
+
+	Image.remove({
+		name : req.params.id
+	}, function(err, img) {
 		if (err) {
-			return handleError(res, err);
+			handleError(res,err);
 		}
-		if (!image) {
-			return res.send(404);
+		if(!img) {
+			
+			foundInDB = false;
+			console.log('Image not found in DB');
 		}
-		image.remove(function(err) {
-			if (err) {
-				return handleError(res, err);
+
+		fs.exists(baseUrl + req.params.id, function(exists) {
+			if (!exists) {
+				foundInFS = false;
+				console.log('Image not found in FileSystem');
+				
+				if(foundInDB) {
+					return res.send(200, "image " + req.params.id + " only deleted from DB");
+				}
+				else {
+					return res.send(404, "image " + req.params.id + " not found");
+				}
+			} else {
+				fs.unlink(baseUrl + req.params.id, function(err) {
+					if (err) {
+						return handleError(err);
+					}
+				});
+				
+				if(foundInDB) {
+					return res.send(200, "image " + req.params.id + " removed from DB and FS");
+				}
+				else {
+					return res.send(200, "image " + req.params.id + " only deleted from FS");
+				}
 			}
-			return res.send(204);
 		});
 	});
+
 };
 
 function handleError(res, err) {
