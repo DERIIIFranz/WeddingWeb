@@ -9,6 +9,8 @@ var ImageSchema = new Schema({
   alt: String,
   size: Number,
   type: String,
+  uploadedBy: String,
+  uploadTime: Number,
   active: Boolean
 });
 

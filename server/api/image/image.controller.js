@@ -44,14 +44,14 @@ exports.show = function(req, res) {
 
 // Creates a new image in the DB.
 exports.create = function(req, res) {
-	console.log(req.files);
-
 	var img = {
-		name : req.files.photo.name,
-		path : req.files.photo.path,
-		alt : req.files.photo.fieldname,
-		size : req.files.photo.size,
-		type : req.files.photo.mimetype,
+		name : req.files.file.name,
+		path : req.files.file.path,
+		alt : req.files.file.fieldname,
+		size : req.files.file.size,
+		type : req.files.file.mimetype,
+		uploadedBy : 'admin',
+		uploadTime : Date.now(),
 		active : true
 	};
 
@@ -61,14 +61,6 @@ exports.create = function(req, res) {
 		}
 		return res.json(201, file);
 	});
-
-	/*
-	 Image.create(req.body, function(err, image) {
-	 if(err) { return handleError(res, err); }
-	 console.log(req.image);
-	 return res.json(201, image);
-	 });
-	 */
 };
 
 // Updates an existing image in the DB.
@@ -93,7 +85,7 @@ exports.update = function(req, res) {
 	});
 };
 
-// Deletes a image from the DB.
+// Deletes an image from the DB.
 exports.destroy = function(req, res) {
 	Image.findById(req.params.id, function(err, image) {
 		if (err) {

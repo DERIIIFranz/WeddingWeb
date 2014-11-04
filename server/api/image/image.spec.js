@@ -42,7 +42,7 @@ describe('GET /api/images', function() {
 describe('POST /api/images', function() {
 	it('should upload an image', function(done) {
 
-		request(app).post('/api/images').field('extra_info', '{"description":"Image of Yeoman"}').attach('photo', 'client/assets/images/yeoman.png').end(function(err, res) {
+		request(app).post('/api/images').field('extra_info', '{"description":"Image of Yeoman"}').attach('file', 'client/assets/images/yeoman.png').end(function(err, res) {
 			res.should.have.status(201);
 			cleanupImage(res.body.path);
 			done();
