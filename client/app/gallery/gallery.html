@@ -15,8 +15,8 @@ ng-show="!dropSupported">
 
 <div class="col-md-12" id="gallery">
 
-	<ul>
-		<li ng-repeat="image in imageList">
+	<ul class="list-unstyled">
+		<li ng-repeat="image in imageList | orderBy: image.uploadTime : reverse">
 			<img class="img-responsive" ng-src="/api/images/{{image.name}}" />
 			<div id="controlls">
 				<button class="btn btn-danger" ng-click="delete(image)">Löschen</button>

@@ -12,10 +12,13 @@ router.use(multer({
 		return filename.replace(/\W+/g, '-').toLowerCase() + "-" + Date.now();
 	},
 	limits : {
-		fieldSize : 100
+		fieldSize : 200
 	},
 	onFileUploadStart : function(file) {
 		console.log(file.originalname + ' is being uploaded ...');
+	},
+	onFileUploadData : function(file, data) {
+	//	console.log(file.size + ' of ' + file.name); <-- PROGRESS
 	}
 }));
 
@@ -26,5 +29,4 @@ router.put('/:id', controller.update);
 router.patch('/:id', controller.update);
 router.delete('/:id', controller.destroy);
 
-
-module.exports = router;
+module.exports = router; 

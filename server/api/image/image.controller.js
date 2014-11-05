@@ -3,7 +3,7 @@
 var _ = require('lodash');
 var fs = require('fs');
 var Image = require('./image.model');
-
+var gm = require('gm');
 var baseUrl = "server\\uploads\\images\\";
 
 // Get list of images
@@ -46,6 +46,38 @@ exports.show = function(req, res) {
 
 // Creates a new image in the DB.
 exports.create = function(req, res) {
+	gm(req.files.file.path).options({
+		imageMagick : true
+	}).identify(function(err, data) {
+		if (err)
+			console.log(err);
+		else {
+			console.log(data.Properties);
+			var dateTime = parseExifDateToDate(data.Properties['exif:DateTimeOriginal']);
+
+			if (!dateTime && data.Properties['exif:DateTimeDigitized'])
+				dateTime = parseExifDateToDate(data.Properties['exif:DateTimeDigitized']);
+			
+			else if (!dateTime && data.Properties['exif:DateTime'])
+				dateTime = parseExifDateToDate(data.Properties['exif:DateTime']);
+			
+			else if (!dateTime && data.Properties['date:create'])
+				dateTime = new Date(data.Properties['date:create']);
+
+			if (dateTime) {
+				Image.update({
+					name : req.files.file.name
+				}, {
+					dateTimeOriginal : dateTime
+				}, function(err, numberAffected, raw) {
+					if (err)
+						console.log(err);
+				});
+			}
+			console.log(dateTime);
+		}
+	});
+
 	var img = {
 		name : req.files.file.name,
 		path : req.files.file.path,
@@ -70,7 +102,7 @@ exports.update = function(req, res) {
 	if (req.body._id) {
 		delete req.body._id;
 	}
-	Image.findById(req.params.id, function(err, image) {
+	Image.ById(req.params.id, function(err, image) {
 		if (err) {
 			return handleError(res, err);
 		}
@@ -96,10 +128,10 @@ exports.destroy = function(req, res) {
 		name : req.params.id
 	}, function(err, img) {
 		if (err) {
-			handleError(res,err);
+			handleError(res, err);
 		}
-		if(!img) {
-			
+		if (!img) {
+
 			foundInDB = false;
 			console.log('Image not found in DB');
 		}
@@ -108,11 +140,10 @@ exports.destroy = function(req, res) {
 			if (!exists) {
 				foundInFS = false;
 				console.log('Image not found in FileSystem');
-				
-				if(foundInDB) {
+
+				if (foundInDB) {
 					return res.send(200, "image " + req.params.id + " only deleted from DB");
-				}
-				else {
+				} else {
 					return res.send(404, "image " + req.params.id + " not found");
 				}
 			} else {
@@ -121,11 +152,10 @@ exports.destroy = function(req, res) {
 						return handleError(err);
 					}
 				});
-				
-				if(foundInDB) {
+
+				if (foundInDB) {
 					return res.send(200, "image " + req.params.id + " removed from DB and FS");
-				}
-				else {
+				} else {
 					return res.send(200, "image " + req.params.id + " only deleted from FS");
 				}
 			}
@@ -136,4 +166,14 @@ exports.destroy = function(req, res) {
 
 function handleError(res, err) {
 	return res.send(500, err);
+}
+
+function parseExifDateToDate(exifDate) {
+	if (!exifDate)
+		return undefined;
+	var dateDays = exifDate.split(' ')[0].split(':');
+	var dateHours = exifDate.split(' ')[1].split(':');
+	if (dateDays.length != 3 || dateHours.length != 3)
+		return undefined;
+	return new Date(Date.UTC(dateDays[0], dateDays[1], dateDays[2], dateHours[0], dateHours[1], dateHours[2]));
 }
