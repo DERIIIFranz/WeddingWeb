@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('weddingWebApp')
-  .controller('MainCtrl', function ($scope, $http) {
+  .controller('MainCtrl', ['$scope', '$http', function ($scope, $http) {
     $scope.awesomeThings = [];
 
     $http.get('/api/things').success(function(awesomeThings) {
@@ -19,4 +19,4 @@ angular.module('weddingWebApp')
     $scope.deleteThing = function(thing) {
       $http.delete('/api/things/' + thing._id);
     };
-  });
+  }]);

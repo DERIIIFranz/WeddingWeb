@@ -1,25 +1,26 @@
-  <input type="text" ng-model="myModelObj">
-  <input type="file" name="photo" ng-file-select="onFileSelect($files)">
-  <input type="file" ng-file-select="onFileSelect($files)" multiple accept="image/*">
-  <div class="button" ng-file-select="onFileSelect($files)" data-multiple="true"></div>
-  <div ng-file-drop="onFileSelect($files)" ng-file-drag-over-class="optional-css-class-name-or-function"
-        ng-show="dropSupported">drop files here</div>
-  <div ng-file-drop-available="dropSupported=true" 
-        ng-show="!dropSupported">HTML5 Drop File is not supported!</div>
-  <button ng-click="upload.abort()">Cancel Upload</button>
-
+<input type="text" ng-model="myModelObj">
+<input type="file" ng-file-select="onFileSelect($files)" multiple accept="image/*">
+<div class="button" ng-file-select="onFileSelect($files)" data-multiple="true"></div>
+<div ng-file-drop="onFileSelect($files)" ng-file-drag-over-class="optional-css-class-name-or-function"
+ng-show="dropSupported">
+	drop files here
+</div>
+<div ng-file-drop-available="dropSupported=true"
+ng-show="!dropSupported">
+	HTML5 Drop File is not supported!
+</div>
+<button ng-click="upload.abort()">
+	Cancel Upload
+</button>
 
 <div class="col-md-12" id="gallery">
 
 	<ul>
-		<li ng-repeat="image in imageList"><img class="img-responsive" ng-src="/api/images/{{image.name}}" />
+		<li ng-repeat="image in imageList">
+			<img class="img-responsive" ng-src="/api/images/{{image.name}}" />
+			<div id="controlls">
+				<button class="btn btn-danger" ng-click="delete(image)">Löschen</button>
+			</div>
 		</li>
 	</ul>
 </div>
-
-<form name="fileUpload" method="post" action="/api/images" enctype="multipart/form-data">
-	<div class="form-group">
-		<input type="file" name="photo" />
-		<input type="submit" value="upload" />
-	</div>
-</form>

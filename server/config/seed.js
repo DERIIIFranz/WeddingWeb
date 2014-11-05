@@ -8,6 +8,7 @@
 var Thing = require('../api/thing/thing.model');
 var User = require('../api/user/user.model');
 var Image = require('../api/image/image.model');
+var fs = require('fs');
 
 Thing.find({}).remove(function() {
 	Thing.create({
@@ -53,20 +54,31 @@ if (process.env.NODE_ENV == "test") {
 	Image.find({}).remove(function() {
 		Image.create({
 			name : 'img1.jpg',
-			path : 'server/uploads/images/testImages/img1.jpg',
+			path : 'server/uploads/images/img1.jpg',
 			alt : 'description img 1',
 			size : 1000,
 			type : 'image/jpeg',
 			active : false
 		}, {
 			name : 'img2.jpg',
-			path : 'server/uploads/images/testImages/img2.jpg',
+			path : 'server/uploads/images/img2.jpg',
 			alt : 'description img 2',
 			size : 1000,
 			type : 'image/jpeg',
 			active : false
 		}, function() {
-			console.log('finished populating images');
+			console.log('finished populating images at DB');
+		});
+
+		fs.exists('server/uploads/images/img1.jpg', function(exist) {
+			if (!exist) {
+				fs.linkSync('client/assets/images/yeoman.png', 'server/uploads/images/img1.jpg');
+			}
+		});
+		fs.exists('server/uploads/images/img2.jpg', function(exist) {
+			if (!exist) {
+				fs.linkSync('client/assets/images/yeoman.png', 'server/uploads/images/img2.jpg');
+			}
 		});
 	});
 }
