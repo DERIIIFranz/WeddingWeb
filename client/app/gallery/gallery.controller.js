@@ -41,8 +41,8 @@ function($scope, $upload, $http) {
 				// file is uploaded successfully
 				console.log(data);
 				$http.get('/api/images').success(function(images) {
-				$scope.imageList = images;
-			});
+					$scope.imageList = images;
+				});
 			});
 			//.error(...)
 			//.then(success, error, progress);

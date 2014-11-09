@@ -52,17 +52,8 @@ exports.create = function(req, res) {
 		if (err)
 			console.log(err);
 		else {
-			console.log(data.Properties);
-			var dateTime = parseExifDateToDate(data.Properties['exif:DateTimeOriginal']);
 
-			if (!dateTime && data.Properties['exif:DateTimeDigitized'])
-				dateTime = parseExifDateToDate(data.Properties['exif:DateTimeDigitized']);
-			
-			else if (!dateTime && data.Properties['exif:DateTime'])
-				dateTime = parseExifDateToDate(data.Properties['exif:DateTime']);
-			
-			else if (!dateTime && data.Properties['date:create'])
-				dateTime = new Date(data.Properties['date:create']);
+			var dateTime = getDateTime(data.Properties);
 
 			if (dateTime) {
 				Image.update({
@@ -74,9 +65,10 @@ exports.create = function(req, res) {
 						console.log(err);
 				});
 			}
-			console.log(dateTime);
 		}
 	});
+
+	autoOrientImage(req.files.file.path);
 
 	var img = {
 		name : req.files.file.name,
@@ -166,6 +158,45 @@ exports.destroy = function(req, res) {
 
 function handleError(res, err) {
 	return res.send(500, err);
+}
+
+function autoOrientImage(path) {
+	gm(path).autoOrient().options({
+		imageMagick : true
+	}).write(path, function(err) {
+		if (err)
+			console.log(err);
+
+		triggerImageReload(path, 'orientationChanged');
+	});
+}
+
+function triggerImageReload(path, info) {
+	Image.update({
+		path : path
+	}, {
+		path : path + '?update=' + info
+	}, function(err, numberAffected, raw) {
+		if (err)
+			console.log(err);
+		if (numberAffected > 1)
+			console.log('Warning: multiple images updated at once');
+	});
+}
+
+function getDateTime(properties) {
+	var dateTime = parseExifDateToDate(properties['exif:DateTimeOriginal']);
+
+	if (!dateTime && properties['exif:DateTimeDigitized'])
+		dateTime = parseExifDateToDate(properties['exif:DateTimeDigitized']);
+	
+else if (!dateTime && properties['exif:DateTime'])
+		dateTime = parseExifDateToDate(properties['exif:DateTime']);
+	
+else if (!dateTime && properties['date:create'])
+		dateTime = new Date(properties['date:create']);
+
+	return dateTime;
 }
 
 function parseExifDateToDate(exifDate) {

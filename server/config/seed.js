@@ -53,31 +53,31 @@ if (process.env.NODE_ENV == "test") {
 
 	Image.find({}).remove(function() {
 		Image.create({
-			name : 'img1.jpg',
-			path : 'server/uploads/images/img1.jpg',
+			name : 'img1.png',
+			path : 'server/uploads/images/img1.png',
 			alt : 'description img 1',
 			size : 1000,
-			type : 'image/jpeg',
+			type : 'image/png',
 			active : false
 		}, {
-			name : 'img2.jpg',
-			path : 'server/uploads/images/img2.jpg',
+			name : 'img2.png',
+			path : 'server/uploads/images/img2.png',
 			alt : 'description img 2',
 			size : 1000,
-			type : 'image/jpeg',
+			type : 'image/png',
 			active : false
 		}, function() {
 			console.log('finished populating images at DB');
 		});
 
-		fs.exists('server/uploads/images/img1.jpg', function(exist) {
+		fs.exists('server/uploads/images/img1.png', function(exist) {
 			if (!exist) {
-				fs.linkSync('client/assets/images/yeoman.png', 'server/uploads/images/img1.jpg');
+				fs.linkSync('client/assets/images/yeoman.png', 'server/uploads/images/img1.png');
 			}
 		});
-		fs.exists('server/uploads/images/img2.jpg', function(exist) {
+		fs.exists('server/uploads/images/img2.png', function(exist) {
 			if (!exist) {
-				fs.linkSync('client/assets/images/yeoman.png', 'server/uploads/images/img2.jpg');
+				fs.linkSync('client/assets/images/yeoman.png', 'server/uploads/images/img2.png');
 			}
 		});
 	});
