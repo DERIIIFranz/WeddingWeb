@@ -52,33 +52,64 @@ User.find({}).remove(function() {
 if (process.env.NODE_ENV == "test") {
 
 	Image.find({}).remove(function() {
-		Image.create({
+		createImage({
+			name : 'img1_left_new.jpg',
+			path : 'server/uploads/images/img1_left_new.jpg',
+			alt : 'yeoman rotated to the left, slightly newer dateTimeOriginal than old one',
+			size : 1000,
+			type : 'image/jpg',
+			uploadTime : Date.now(),
+			dateTimeOriginal : new Date(Date.UTC('2013', '11', '10')),
+			active : true
+		});
+		createImage({
+			name : 'img1_left_old.jpg',
+			path : 'server/uploads/images/img1_left_old.jpg',
+			alt : 'yeoman rotated to the left, older dateTimeOriginal than new one',
+			size : 1000,
+			type : 'image/jpg',
+			uploadTime : Date.now(),
+			dateTimeOriginal : new Date(Date.UTC('2013', '10', '08')),
+			active : true
+		});
+		createImage({
 			name : 'img1.png',
 			path : 'server/uploads/images/img1.png',
-			alt : 'description img 1',
+			alt : 'yeoman rotated to the left, without a specific dateTimeOriginal',
 			size : 1000,
 			type : 'image/png',
-			active : false
-		}, {
+			uploadTime : Date.now(),
+			dateTimeOriginal : Date.now(),
+			active : true
+		});
+		createImage({
 			name : 'img2.png',
 			path : 'server/uploads/images/img2.png',
-			alt : 'description img 2',
+			alt : 'yeoman rotated to the left, without a specific dateTimeOriginal - inactive',
 			size : 1000,
 			type : 'image/png',
+			uploadTime : Date.now(),
+			dateTimeOriginal : Date.now(),
 			active : false
-		}, function() {
-			console.log('finished populating images at DB');
 		});
 
-		fs.exists('server/uploads/images/img1.png', function(exist) {
-			if (!exist) {
-				fs.linkSync('client/assets/images/yeoman.png', 'server/uploads/images/img1.png');
-			}
-		});
-		fs.exists('server/uploads/images/img2.png', function(exist) {
-			if (!exist) {
-				fs.linkSync('client/assets/images/yeoman.png', 'server/uploads/images/img2.png');
-			}
-		});
+	});
+}
+
+function createImage(image) {
+	Image.create({
+		name : image.name,
+		path : image.path,
+		alt : image.alt,
+		size : image.size,
+		type : image.type,
+		uploadTime : image.uploadTime,
+		dateTimeOriginal : image.dateTimeOriginal,
+		active : image.active
+	});
+
+	fs.exists(image.path, function(exist) {
+		if (!exist)
+			fs.linkSync('server/uploads/images/test_images_src/' + image.name, image.path);
 	});
 }

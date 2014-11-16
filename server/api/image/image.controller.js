@@ -46,47 +46,44 @@ exports.show = function(req, res) {
 
 // Creates a new image in the DB.
 exports.create = function(req, res) {
+	console.log('processing image...');
+
 	gm(req.files.file.path).options({
 		imageMagick : true
 	}).identify(function(err, data) {
 		if (err)
 			console.log(err);
 		else {
+			var img = {
+				name : req.files.file.name,
+				path : req.files.file.path,
+				alt : req.files.file.fieldname,
+				size : req.files.file.size,
+				type : req.files.file.mimetype,
+				uploadedBy : 'admin',
+				uploadTime : Date.now(),
+				dateTimeOriginal : getDateTimeOriginal(data.Properties),
+				active : true
+			};
+			createImgAndReturn(img);
+			/*
+			 autoOrientImage(req.files.file.path, function() {
+			 console.log('done');
+			 createImgAndReturn(img);
+			 });
+			 */
+		}
+	});
 
-			var dateTime = getDateTime(data.Properties);
-
-			if (dateTime) {
-				Image.update({
-					name : req.files.file.name
-				}, {
-					dateTimeOriginal : dateTime
-				}, function(err, numberAffected, raw) {
-					if (err)
-						console.log(err);
-				});
+	function createImgAndReturn(img) {
+		Image.create(img, function(err, file) {
+			if (err) {
+				return handleError(res, err);
 			}
-		}
-	});
+			return res.json(201, file);
+		});
+	}
 
-	autoOrientImage(req.files.file.path);
-
-	var img = {
-		name : req.files.file.name,
-		path : req.files.file.path,
-		alt : req.files.file.fieldname,
-		size : req.files.file.size,
-		type : req.files.file.mimetype,
-		uploadedBy : 'admin',
-		uploadTime : Date.now(),
-		active : true
-	};
-
-	Image.create(img, function(err, file) {
-		if (err) {
-			return handleError(res, err);
-		}
-		return res.json(201, file);
-	});
 };
 
 // Updates an existing image in the DB.
@@ -159,32 +156,25 @@ exports.destroy = function(req, res) {
 function handleError(res, err) {
 	return res.send(500, err);
 }
-
-function autoOrientImage(path) {
+/**
+ * bug: autoOrient() strips profiles
+ * @param {String} path path to image-source
+ * @param {Object} callback
+ */
+function autoOrientImage(path, callback) {
 	gm(path).autoOrient().options({
 		imageMagick : true
 	}).write(path, function(err) {
 		if (err)
 			console.log(err);
 
-		triggerImageReload(path, 'orientationChanged');
+		if (callback && typeof (callback) === 'function') {
+			callback();
+		}
 	});
 }
 
-function triggerImageReload(path, info) {
-	Image.update({
-		path : path
-	}, {
-		path : path + '?update=' + info
-	}, function(err, numberAffected, raw) {
-		if (err)
-			console.log(err);
-		if (numberAffected > 1)
-			console.log('Warning: multiple images updated at once');
-	});
-}
-
-function getDateTime(properties) {
+function getDateTimeOriginal(properties) {
 	var dateTime = parseExifDateToDate(properties['exif:DateTimeOriginal']);
 
 	if (!dateTime && properties['exif:DateTimeDigitized'])
@@ -206,5 +196,6 @@ function parseExifDateToDate(exifDate) {
 	var dateHours = exifDate.split(' ')[1].split(':');
 	if (dateDays.length != 3 || dateHours.length != 3)
 		return undefined;
-	return new Date(Date.UTC(dateDays[0], dateDays[1], dateDays[2], dateHours[0], dateHours[1], dateHours[2]));
+	//months in JS are 0-based
+	return new Date(Date.UTC(dateDays[0], dateDays[1] - 1, dateDays[2], dateHours[0], dateHours[1], dateHours[2]));
 }

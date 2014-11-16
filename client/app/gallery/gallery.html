@@ -1,5 +1,5 @@
 <input type="text" ng-model="myModelObj">
-<input type="file" ng-file-select="onFileSelect($files)" multiple accept="image/*">
+<input type="file" id="upload-file-field" ng-file-select="onFileSelect($files)" multiple accept="image/*">
 <div class="button" ng-file-select="onFileSelect($files)" data-multiple="true"></div>
 <div ng-file-drop="onFileSelect($files)" ng-file-drag-over-class="optional-css-class-name-or-function"
 ng-show="dropSupported">
@@ -16,10 +16,11 @@ ng-show="!dropSupported">
 <div class="col-md-12" id="gallery">
 
 	<ul class="list-unstyled">
-		<li ng-repeat="image in imageList | orderBy: image.uploadTime : reverse">
+		<li ng-repeat="image in imageList | orderBy: 'dateTimeOriginal'">
 			<img class="img-responsive" ng-src="/api/images/{{image.name}}" />
-			<div id="controlls">
-				<button class="btn btn-danger" ng-click="delete(image)">Löschen</button>
+			<span>{{image.dateTimeOriginal}}</span>
+			<div id="controlls-{{image.name}}">
+				<button class="btn btn-danger" id="delete" ng-click="delete(image)">Löschen</button>
 			</div>
 		</li>
 	</ul>

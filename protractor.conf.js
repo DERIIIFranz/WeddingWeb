@@ -20,6 +20,11 @@ exports.config = {
   specs: [
     'e2e/**/*.spec.js'
   ],
+  
+  suites: {
+  	gallery: 'e2e/gallery/*.spec.js',
+  	main: 'e2e/main/*.spec.js'
+  },
 
   // Patterns to exclude.
   exclude: [],
@@ -33,6 +38,11 @@ exports.config = {
   capabilities: {
     'browserName': 'chrome'
   },
+  /* multiCapabilities: [{
+    browserName: 'firefox'
+  }, {
+    browserName: 'chrome'
+  }]*/
 
   // ----- The test framework -----
   //

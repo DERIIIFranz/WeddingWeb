@@ -4,16 +4,11 @@ angular.module('weddingWebApp').controller('GalleryCtrl', ['$scope', '$upload', 
 function($scope, $upload, $http) {
 	$scope.message = 'Hello';
 	$scope.imageList = '';
-
-	$http.get('/api/images').success(function(images) {
-		$scope.imageList = images;
-	});
+	reloadImageList();
 
 	$scope.delete = function(image) {
 		$http.delete('api/images/' + image.name).success(function(res, err) {
-			$http.get('/api/images').success(function(images) {
-				$scope.imageList = images;
-			});
+			reloadImageList();
 		});
 	};
 
@@ -40,9 +35,7 @@ function($scope, $upload, $http) {
 			}).success(function(data, status, headers, config) {
 				// file is uploaded successfully
 				console.log(data);
-				$http.get('/api/images').success(function(images) {
-					$scope.imageList = images;
-				});
+				reloadImageList();
 			});
 			//.error(...)
 			//.then(success, error, progress);
@@ -54,4 +47,11 @@ function($scope, $upload, $http) {
 		It could also be used to monitor the progress of a normal http post/put request with large data*/
 		// $scope.upload = $upload.http({...})  see 88#issuecomment-31366487 for sample code.
 	};
+
+	function reloadImageList() {
+		$http.get('/api/images').success(function(images) {
+			$scope.imageList = images;
+		});
+	}
+
 }]);
