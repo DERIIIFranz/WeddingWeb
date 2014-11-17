@@ -20,5 +20,6 @@
 		<nature>com.aptana.projects.webnature</nature>
 		<nature>tern.eclipse.ide.core.ternnature</nature>
 		<nature>org.eclipse.angularjs.core.angularnature</nature>
+		<nature>com.aptana.ruby.core.rubynature</nature>
 	</natures>
 </projectDescription>

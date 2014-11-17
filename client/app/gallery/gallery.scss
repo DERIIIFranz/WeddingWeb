@@ -1,0 +1,11 @@
+.drop-zone {
+  border: 0.3em dotted lightgray;
+  border-radius: 1em;
+  background-color: #f5f5f5;
+  padding: 3em;
+  width: 12em;
+}
+
+.drop-zone-active {
+  background-color: lightgreen;
+}

@@ -40,6 +40,12 @@ User.find({}).remove(function() {
 		password : 'test'
 	}, {
 		provider : 'local',
+		role : 'paparazzo',
+		name : 'Papa',
+		email : 'papa@razzo.com',
+		password : 'papa'
+	}, {
+		provider : 'local',
 		role : 'admin',
 		name : 'Admin',
 		email : 'admin@admin.com',

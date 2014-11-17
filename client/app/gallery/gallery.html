@@ -1,18 +1,18 @@
-<input type="text" ng-model="myModelObj">
-<input type="file" id="upload-file-field" ng-file-select="onFileSelect($files)" multiple accept="image/*">
-<div class="button" ng-file-select="onFileSelect($files)" data-multiple="true"></div>
-<div ng-file-drop="onFileSelect($files)" ng-file-drag-over-class="optional-css-class-name-or-function"
-ng-show="dropSupported">
-	drop files here
+<div id="upload-form" ng-show="isAuthorizedForUpload()">
+	<input type="file" id="upload-file-field" ng-file-select="onFileSelect($files)" multiple accept="image/*">
+	<div class="button" ng-file-select="onFileSelect($files)" data-multiple="true"></div>
+	<div ng-file-drop="onFileSelect($files)" class="drop-zone" ng-file-drag-over-class="drop-zone-active"
+	ng-show="dropSupported">
+		drop files here
+	</div>
+	<div ng-file-drop-available="dropSupported=true"
+	ng-show="!dropSupported">
+		HTML5 Drop File is not supported!
+	</div>
+	<button ng-click="upload.abort()">
+		Cancel Upload
+	</button>
 </div>
-<div ng-file-drop-available="dropSupported=true"
-ng-show="!dropSupported">
-	HTML5 Drop File is not supported!
-</div>
-<button ng-click="upload.abort()">
-	Cancel Upload
-</button>
-
 <div class="col-md-12" id="gallery">
 
 	<ul class="list-unstyled">
@@ -20,7 +20,9 @@ ng-show="!dropSupported">
 			<img class="img-responsive" ng-src="/api/images/{{image.name}}" />
 			<span>{{image.dateTimeOriginal}}</span>
 			<div id="controlls-{{image.name}}">
-				<button class="btn btn-danger" id="delete" ng-click="delete(image)">Löschen</button>
+				<button class="btn btn-danger" id="delete" ng-click="delete(image)">
+					<span class="glyphicon glyphicon-trash pull-right"></span>
+				</button>
 			</div>
 		</li>
 	</ul>

@@ -12,6 +12,7 @@ angular.module('weddingWebApp')
     	'title': 'Guestbook',
     	'link': '/guestbook'
     }];
+   console.dir(Auth.getCurrentUser);
 
     $scope.isCollapsed = true;
     $scope.isLoggedIn = Auth.isLoggedIn;

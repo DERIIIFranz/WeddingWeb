@@ -1,7 +1,7 @@
 'use strict';
 
-angular.module('weddingWebApp').controller('GalleryCtrl', ['$scope', '$upload', '$http',
-function($scope, $upload, $http) {
+angular.module('weddingWebApp').controller('GalleryCtrl', ['$scope', '$upload', '$http', 'Auth',
+function($scope, $upload, $http, Auth) {
 	$scope.message = 'Hello';
 	$scope.imageList = '';
 	reloadImageList();
@@ -10,6 +10,10 @@ function($scope, $upload, $http) {
 		$http.delete('api/images/' + image.name).success(function(res, err) {
 			reloadImageList();
 		});
+	};
+	
+	$scope.isAuthorizedForUpload = function() {
+		return Auth.isPaparazzo() || Auth.isAdmin();
 	};
 
 	$scope.onFileSelect = function($files) {

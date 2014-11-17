@@ -135,6 +135,13 @@ angular.module('weddingWebApp')
       isAdmin: function() {
         return currentUser.role === 'admin';
       },
+      
+      /**
+       * Check if a user is a paparazzo
+       */
+      isPaparazzo: function() {
+    	  return currentUser.role === 'paparazzo';
+      },
 
       /**
        * Get auth token

@@ -30,7 +30,7 @@ describe('GET /api/images', function() {
 			if (err)
 				return done(err);
 			countImages.should.equal(Object.keys(res.body).length);
-			countImages.should.be.exactly(2);
+			countImages.should.be.exactly(4);
 			done();
 		});
 	});
