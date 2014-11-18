@@ -3,6 +3,7 @@
 var express = require('express');
 var controller = require('./image.controller');
 var multer = require('multer');
+var auth = require('../../auth/auth.service');
 
 var router = express.Router();
 
@@ -24,9 +25,9 @@ router.use(multer({
 
 router.get('/', controller.index);
 router.get('/:id', controller.show);
-router.post('/', controller.create);
-router.put('/:id', controller.update);
-router.patch('/:id', controller.update);
-router.delete('/:id', controller.destroy);
+router.post('/', auth.hasRole('paparazzo'), controller.create);
+router.put('/:id', auth.hasRole('paparazzo'), controller.update);
+router.patch('/:id', auth.hasRole('paparazzo'), controller.update);
+router.delete('/:id', auth.hasRole('admin'), controller.destroy);
 
 module.exports = router; 

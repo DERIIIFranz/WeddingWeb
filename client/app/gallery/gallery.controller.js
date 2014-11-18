@@ -15,6 +15,10 @@ function($scope, $upload, $http, Auth) {
 	$scope.isAuthorizedForUpload = function() {
 		return Auth.isPaparazzo() || Auth.isAdmin();
 	};
+	
+	$scope.isAuthorizedForDeletion = function() {
+		return Auth.isAdmin();
+	};
 
 	$scope.onFileSelect = function($files) {
 		//$files: an array of files selected, each file has name, size, and type.
