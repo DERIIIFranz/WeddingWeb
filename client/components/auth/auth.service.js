@@ -148,6 +148,15 @@ angular.module('weddingWebApp')
        */
       getToken: function() {
         return $cookieStore.get('token');
+      },
+      
+      /**
+       * retrieve available roles from server
+       */
+      getRoles: function(callback) {
+    	  $http.get('auth/roles').success(function(data) {
+    		  callback(data);
+    	  });
       }
     };
   });

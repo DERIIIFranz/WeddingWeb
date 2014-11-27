@@ -17,6 +17,9 @@ angular.module('weddingWebApp')
         params: {
           id:'me'
         }
+      },
+      update: {
+    	  method: 'PUT'
       }
 	  });
   });

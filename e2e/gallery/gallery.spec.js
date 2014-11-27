@@ -4,46 +4,22 @@ process.env.NODE_ENV = "test";
 var request = require('supertest');
 var path = require('path');
 
+var page;
+var pTor;
+var loggedIn;
+
 describe('Gallery', function() {
-	var page;
-	var pTor;
 
 	beforeEach(function() {
 		browser.get('/gallery');
 		page = require('./gallery.po');
 		pTor = protractor.getInstance();
+		loggedIn = false;
 	});
 
-	function login(email, password) {
-		page.login.isDisplayed().then(function(isDisplayed) {
-			if(!isDisplayed)
-				page.navbarToggle.isDisplayed().then(function(isDisplayed) {
-					expect(isDisplayed).toBe(true);
-					page.navbarToggle.click();
-				});
-		});
-		
-		page.login.click();
-		page.loginEmail.sendKeys(email);
-		page.loginPassword.sendKeys(password);
-		page.loginSubmit.click();
-		page.galleryLink.click();
-		
-		page.logoutLink.isDisplayed().then(function(isDisplayed){
-			expect(isDisplayed).toBe(true);
-		});
-	};
-	
-	function logout() {
-		page.logoutLink.isDisplayed().then(function(isDisplayed) {
-			if(!isDisplayed)
-				page.navbarToggle.isDisplayed().then(function(isDisplayed) {
-					expect(isDisplayed).toBe(true);
-					page.navbarToggle.click();
-				});
-		});
-		page.logoutLink.click();
-	};
+	afterEach(function() {
+		logout();
+	});
 
 	it('should upload and delete an image when according button is clicked',
 			function(done) {
@@ -51,6 +27,8 @@ describe('Gallery', function() {
 				var deleteButtonsCount;
 				var fileName = "img2";
 				var fileExt = ".png";
+
+				login('admin@admin.com', 'admin');
 
 				page.deleteButtons.then(function(deleteButtons) {
 					deleteButtonsCount = deleteButtons.length;
@@ -66,19 +44,14 @@ describe('Gallery', function() {
 					});
 				});
 				// DELETE
-				$('div[id^="controlls-' + fileName + '-"] button[id="delete"')
-						.then(
-								function(deleteButton) {
-									deleteButton.click();
-									page.deleteButtons.then(function(
-											deleteButtons) {
-										expect(deleteButtons.length).toBe(
-												deleteButtonsCount);
-										done();
-									});
+				page.deleteButton(fileName).then(function(deleteButton) {
+					deleteButton.click();
+					page.deleteButtons.then(function(deleteButtons) {
+						expect(deleteButtons.length).toBe(deleteButtonsCount);
+						done();
+					});
 
-								});
-
+				});
 			});
 
 	it('should order images by dateTimeOriginal by default', function(done) {
@@ -95,27 +68,59 @@ describe('Gallery', function() {
 		done();
 	});
 
-	it('should not display upload-form for unauthorised users',
-			function(done) {
-				page.uploadForm.isDisplayed().then(function(isDisplayed) {
-					expect(isDisplayed).toBe(false);
-				});
+	it('should not display upload-form for unauthorised users', function(done) {
+		page.uploadForm.isDisplayed().then(function(isDisplayed) {
+			expect(isDisplayed).toBe(false);
+		});
 
-				login('test@test.com', 'test');
-				page.uploadForm.isDisplayed().then(function(isDisplayed) {
-					expect(isDisplayed).toBe(false);
-					logout();
-					done();
-				});
-			});
+		login('test@test.com', 'test');
+		page.uploadForm.isDisplayed().then(function(isDisplayed) {
+			expect(isDisplayed).toBe(false);
+			done();
+		});
+	});
 
 	it('should display upload-form for authorised users', function(done) {
 		login('papa@razzo.com', 'papa');
 
 		page.uploadForm.isDisplayed().then(function(isDisplayed) {
 			expect(isDisplayed).toBe(true);
-			logout();
 			done();
 		});
 	});
 });
+
+function login(email, password) {
+	page.login.isDisplayed().then(function(isDisplayed) {
+		if (!isDisplayed)
+			page.navbarToggle.isDisplayed().then(function(isDisplayed) {
+				expect(isDisplayed).toBe(true);
+				page.navbarToggle.click();
+			});
+	});
+
+	page.login.click();
+	page.loginEmail.sendKeys(email);
+	page.loginPassword.sendKeys(password);
+	page.loginSubmit.click();
+	page.galleryLink.click();
+
+	page.logoutLink.isDisplayed().then(function(isDisplayed) {
+		expect(isDisplayed).toBe(true);
+		loggedIn = true;
+	});
+};
+
+function logout() {
+	if (loggedIn) {
+		page.logoutLink.isDisplayed().then(function(isDisplayed) {
+			if (!isDisplayed)
+				page.navbarToggle.isDisplayed().then(function(isDisplayed) {
+					expect(isDisplayed).toBe(true);
+					page.navbarToggle.click();
+				});
+		});
+		page.logoutLink.click();
+		loggedIn = false;
+	}
+};

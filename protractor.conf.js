@@ -23,7 +23,8 @@ exports.config = {
   
   suites: {
   	gallery: 'e2e/gallery/*.spec.js',
-  	main: 'e2e/main/*.spec.js'
+  	main: 'e2e/main/*.spec.js',
+  	admin: 'e2e/admin/*.spec.js'
   },
 
   // Patterns to exclude.

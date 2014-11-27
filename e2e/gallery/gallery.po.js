@@ -7,6 +7,9 @@
 
 var GalleryPage = function() {
 	this.galleryLink = $('.navbar').element(by.linkText('Gallery'));
+	this.deleteButton = function(fileName) {
+		return $('div[id^="controlls-' + fileName + '-"] button[id="delete"]');
+	};
 	this.deleteButtons = element(by.id('gallery')).all(by.id('delete'));
 	this.galleryImages = element(by.id('gallery')).all(by.tagName('img'));
 	this.uploadField = element(by.id('upload-file-field'));

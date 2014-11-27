@@ -122,13 +122,13 @@ exports.destroy = function(req, res) {
 		if (!img) {
 
 			foundInDB = false;
-			console.log('Image not found in DB');
+			console.log('Image not found in DB - delete from Filesystem only');
 		}
 
 		fs.exists(baseUrl + req.params.id, function(exists) {
 			if (!exists) {
 				foundInFS = false;
-				console.log('Image not found in FileSystem');
+				console.log('Image not found in FileSystem - delete from Database only');
 
 				if (foundInDB) {
 					return res.send(200, "image " + req.params.id + " only deleted from DB");
@@ -157,7 +157,7 @@ function handleError(res, err) {
 	return res.send(500, err);
 }
 /**
- * bug: autoOrient() strips profiles
+ * consider reappending exif-data
  * @param {String} path path to image-source
  * @param {Object} callback
  */

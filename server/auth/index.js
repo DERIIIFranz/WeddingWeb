@@ -12,4 +12,8 @@ var router = express.Router();
 
 router.use('/local', require('./local'));
 
+router.get('/roles', function(req,res) {
+	return res.json(200, config.userRoles);
+});
+
 module.exports = router;

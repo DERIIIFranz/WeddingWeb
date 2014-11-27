@@ -3,6 +3,13 @@
 angular.module('weddingWebApp')
   .controller('SettingsCtrl', function ($scope, User, Auth) {
     $scope.errors = {};
+    
+    $scope.token = Auth.getToken();
+    $scope.showToken = false;
+    
+    $scope.toggleToken = function() {
+    	$scope.showToken = !$scope.showToken;
+    };
 
     $scope.changePassword = function(form) {
       $scope.submitted = true;
